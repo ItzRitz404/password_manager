@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,19 +12,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Remove the debug banner
       title: 'Flutter Demo',
       theme: ThemeData(        
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 0, 71, 171)),
         useMaterial3: true, 
       ),
-      home: const MyHomePage(title: 'Password Manager'),
+      home: MyHomePage(title: 'Password Manager'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -36,46 +38,332 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+  final TextEditingController application = TextEditingController();
+  final TextEditingController username = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController url = TextEditingController();
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<Map<String, String>> passwords = [];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Future<String?> addPasswordMenu(context) => showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Add Password'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+             TextFormField(
+              controller: widget.application,
+              obscureText: false,
+              textAlign: TextAlign.start,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.normal,
+                color: Color(0xff000000)),
+                decoration: InputDecoration(
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  labelText: 'Application',
+                  labelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.normal,
+                    color: Color(0xff000000)),
+                    filled: true,
+                    fillColor: const Color(0xFFFFFFFF),
+                    isDense: false,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8.0, 
+                      horizontal: 12.0,
+                    ),
+                    icon: const Icon(Icons.apps_sharp),
+                ),),
+                const SizedBox(height: 9.0, width: 500.0),
+
+                TextFormField(
+              controller: widget.username,
+              obscureText: false,
+              textAlign: TextAlign.start,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.normal,
+                color: Color(0xff000000)),
+                decoration: InputDecoration(
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  labelText: 'Username',
+                  labelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.normal,
+                    color: Color(0xff000000)),
+                    filled: true,
+                    fillColor: const Color(0xFFFFFFFF),
+                    isDense: false,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8.0, 
+                      horizontal: 12.0,
+                    ),
+                    icon: const Icon(Icons.person),
+                ),),
+                const SizedBox(height: 9.0, width: 500.0),
+
+                TextFormField(
+              controller: widget.password,
+              obscureText: false,
+              textAlign: TextAlign.start,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.normal,
+                color: Color(0xff000000)),
+                decoration: InputDecoration(
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  labelText: 'Password',
+                  labelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.normal,
+                    color: Color(0xff000000)),
+                    filled: true,
+                    fillColor: const Color(0xFFFFFFFF),
+                    isDense: false,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8.0, 
+                      horizontal: 12.0,
+                    ),
+                    icon: const Icon(Icons.security),
+                ),),
+                const SizedBox(height: 9.0, width: 500.0),
+
+                TextFormField(
+              controller: widget.url,
+              obscureText: false,
+              textAlign: TextAlign.start,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.normal,
+                color: Color(0xff000000)),
+                decoration: InputDecoration(
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0051A3),
+                      width: 1,
+                     ), // Border color
+                  ),
+                  labelText: 'URL',
+                  labelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.normal,
+                    color: Color(0xff000000)),
+                    filled: true,
+                    fillColor: const Color(0xFFFFFFFF),
+                    isDense: false,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8.0, 
+                      horizontal: 12.0,
+                    ),
+                    icon: const Icon(Icons.link),
+                ),),
+                const SizedBox(height: 9.0, width: 500.0),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              clearFields(); // Clear the text fields
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Add'),
+            onPressed: () {
+              // Add your add action here
+              setState(() {
+                passwords.add({
+                  'application': widget.application.text,
+                  'username': widget.username.text,
+                  'password': widget.password.text,
+                  'url': widget.url.text,
+                });
+              });
+              clearFields();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+  
+  void clearFields() {
+    widget.application.clear();
+    widget.username.clear();
+    widget.password.clear();
+    widget.url.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
+      backgroundColor: const Color(0xFFC6E6FB),
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        backgroundColor: const Color(0xFF0051A3), 
+        title: Text(widget.title,
+          style: const TextStyle(
+            fontSize: 25,
+            color: Color(0xFFFFFFFF),
+            fontWeight: FontWeight.w900 // AppBar text color
+          ),
+        ),
+        centerTitle: true,
+        
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          tooltip: 'Close',
+          onPressed: () {
+            // Add your close action here
+            // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+             // Close the app or navigate back
+            SystemNavigator.pop(); // This will close the app
+          },
+        ),
+         // Center the title in the AppBar
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Settings',
+            onPressed: () {
+              // Add your settings action here
+            },
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Add Password',
+            onPressed: () => addPasswordMenu(context),
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
+      // This is the main content of the app. It is a stateful widget, meaning
+      body: 
+        passwords.isEmpty ? const Center(
+          child: Text("database is empty",
+            style: TextStyle(
+              fontSize: 20,
+              color: Color(0xFF0051A3), // Text color
+            ),
+          ),
+        )
+        : ListView.builder(
+          itemCount: passwords.length,
+          itemBuilder: (context, index) {
+            return Card( 
+              child: ListTile(
+              title: Text(passwords[index]['application'] ?? ''),
+              subtitle: Text(passwords[index]['username'] ?? ''),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  setState(() {
+                    passwords.removeAt(index);
+                  });
+                },
+              ),
+            ));
+          },
+        ),
+
+    
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
@@ -89,21 +377,16 @@ class _MyHomePageState extends State<MyHomePage> {
           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        
+            // The Text widget displays the value of the counter variable.
+            // The counter variable is defined in the _MyHomePageState class.
+            // The Text widget is a stateless widget, meaning it does not have
+            // any mutable state. It is used to display text on the screen.
+            
+          
+        
+     
+  // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
