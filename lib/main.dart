@@ -330,7 +330,12 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Add Password',
-            onPressed: () => addPasswordMenu(context),
+            onPressed: () async{
+              await addPasswordMenu(context);
+              setState(() {
+                
+              }); // Show the add password dialog
+            }
           ),
         ],
       ),
