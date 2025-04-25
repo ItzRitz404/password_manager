@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'master_password.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +21,8 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 0, 71, 171)),
         useMaterial3: true, 
       ),
-      home: MyHomePage(title: 'Password Manager'),
+      // home: MyHomePage(title: 'Password Manager'),
+      home: MasterPasswordCheck(),
     );
   }
 }
