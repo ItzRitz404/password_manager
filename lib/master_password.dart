@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
+import 'master_password_setter.dart';
 
 class MasterPasswordPage extends StatefulWidget {
   final Function(String) passwordEntered;
@@ -134,7 +135,7 @@ class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
     if (masterPassword == null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyHomePage(title: 'Enter Master Password')) );
+        MaterialPageRoute(builder: (context) => const MasterPasswordSetterPage()) );
     } else {
       Navigator.pushReplacement(
         context,

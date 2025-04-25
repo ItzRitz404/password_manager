@@ -301,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: const Color(0xFFC6E6FB),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0051A3), 
-        title: Text(widget.title,
+        title: Text('Password Manager',
           style: const TextStyle(
             fontSize: 25,
             color: Color(0xFFFFFFFF),
