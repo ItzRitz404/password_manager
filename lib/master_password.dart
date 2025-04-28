@@ -7,7 +7,7 @@ import 'master_password_setter.dart';
 class MasterPasswordPage extends StatefulWidget {
   final Function(String) passwordEntered;
 
-  const MasterPasswordPage({Key? key, required this.passwordEntered}) : super(key: key);
+  const MasterPasswordPage({super.key, required this.passwordEntered});
 
   @override
   _MasterPasswordPageState createState() => _MasterPasswordPageState();
@@ -115,6 +115,8 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
 
 
 class MasterPasswordCheck extends StatefulWidget {
+  const MasterPasswordCheck({super.key});
+
   @override
   _MasterPasswordCheckState createState() => _MasterPasswordCheckState();
 }
