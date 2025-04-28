@@ -14,11 +14,12 @@ class MasterPasswordPage extends StatefulWidget {
 }
 
 class _MasterPasswordPageState extends State<MasterPasswordPage> {
-  final TextEditingController masterPasswordController = TextEditingController();
+  final TextEditingController masterPasswordController =
+      TextEditingController();
   final FlutterSecureStorage storage = FlutterSecureStorage();
 
   bool isPasswordCorrect = true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -28,9 +29,9 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
     final savedPassword = await storage.read(key: 'master_password');
 
     if (masterPasswordController.text == savedPassword) {
-      widget.passwordEntered(masterPasswordController.text);    
+      widget.passwordEntered(masterPasswordController.text);
     } else {
-     setState(() {
+      setState(() {
         isPasswordCorrect = false;
       });
     }
@@ -39,23 +40,24 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFC6E6FB), 
+      backgroundColor: const Color(0xFFC6E6FB),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0051A3), 
-         title: const Text('Enter Master Password',
+        backgroundColor: const Color(0xFF0051A3),
+        title: const Text(
+          'Enter Master Password',
           style: TextStyle(
             fontSize: 25,
             color: Color(0xFFFFFFFF),
-            fontWeight: FontWeight.w900 // AppBar text color
+            fontWeight: FontWeight.w900, // AppBar text color
           ),
         ),
         centerTitle: true,
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          TextFormField(
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
               controller: masterPasswordController,
               obscureText: false,
               textAlign: TextAlign.start,
@@ -64,55 +66,58 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontStyle: FontStyle.normal,
-                color: Color(0xff000000)),
-                decoration: InputDecoration(
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF0051A3),
-                      width: 1,
-                     ), // Border color
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF0051A3),
-                      width: 1,
-                     ), // Border color
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF0051A3),
-                      width: 1,
-                     ), // Border color
-                  ),
-                  labelText: 'Master Password',
-                  labelStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontStyle: FontStyle.normal,
-                    color: Color(0xff000000)),
-                    filled: true,
-                    fillColor: const Color(0xFFFFFFFF),
-                    isDense: false,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 8.0, 
-                      horizontal: 12.0,
-                    ),
-                    icon: const Icon(Icons.apps_sharp),
-                ),),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: checkPassword, 
-                  child: const Text('Submit'),
+                color: Color(0xff000000),
+              ),
+              decoration: InputDecoration(
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF0051A3),
+                    width: 1,
+                  ), // Border color
                 ),
-        ],),     
-    )
-    );    
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF0051A3),
+                    width: 1,
+                  ), // Border color
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF0051A3),
+                    width: 1,
+                  ), // Border color
+                ),
+                labelText: 'Master Password',
+                labelStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.normal,
+                  color: Color(0xff000000),
+                ),
+                filled: true,
+                fillColor: const Color(0xFFFFFFFF),
+                isDense: false,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 12.0,
+                ),
+                icon: const Icon(Icons.apps_sharp),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: checkPassword,
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
-
 
 class MasterPasswordCheck extends StatefulWidget {
   const MasterPasswordCheck({super.key});
@@ -123,9 +128,8 @@ class MasterPasswordCheck extends StatefulWidget {
 
 class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
-   
-   @override
 
+  @override
   void initState() {
     super.initState();
     _checkMasterPassword();
@@ -137,11 +141,18 @@ class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
     if (masterPassword == null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MasterPasswordSetterPage()) );
+        MaterialPageRoute(
+          builder: (context) => const MasterPasswordSetterPage(),
+        ),
+      );
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MasterPasswordPage(passwordEntered: _passwordEntered))
+        MaterialPageRoute(
+          builder:
+              (context) =>
+                  MasterPasswordPage(passwordEntered: _passwordEntered),
+        ),
       );
     }
   }
@@ -149,7 +160,9 @@ class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
   void _passwordEntered(String password) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => MyHomePage(title: 'Password Manager'))
+      MaterialPageRoute(
+        builder: (context) => MyHomePage(title: 'Password Manager'),
+      ),
     );
   }
 
@@ -157,7 +170,8 @@ class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(), // Show a loading indicator while checking the password
+        child:
+            CircularProgressIndicator(), // Show a loading indicator while checking the password
       ),
     );
   }

@@ -3,12 +3,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
 
 final TextEditingController newMasterPassword = TextEditingController();
-  final TextEditingController confirmMasterPassword = TextEditingController();
+final TextEditingController confirmMasterPassword = TextEditingController();
 
-  Future<void> savePassword (String password) async {
-    final FlutterSecureStorage storage = const FlutterSecureStorage();
-    await storage.write(key: 'master_password', value: password);
-  }
+Future<void> savePassword(String password) async {
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  await storage.write(key: 'master_password', value: password);
+}
 
 class MasterPasswordSetterPage extends StatelessWidget {
   const MasterPasswordSetterPage({super.key});
@@ -31,8 +31,8 @@ class MasterPasswordSetterPage extends StatelessWidget {
           'Set Master Password',
           style: TextStyle(
             color: Color(0xFFFF7F50),
-            fontWeight: FontWeight.w900
-          )
+            fontWeight: FontWeight.w900,
+          ),
         ),
         centerTitle: true,
       ),
@@ -54,7 +54,6 @@ class MasterPasswordSetterPage extends StatelessWidget {
                 color: Color(0xff000000),
               ),
               decoration: InputDecoration(
-              
                 disabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0),
                   borderSide: const BorderSide(
@@ -94,7 +93,7 @@ class MasterPasswordSetterPage extends StatelessWidget {
                 icon: const Icon(Icons.security),
               ),
             ),
-          ),  
+          ),
           const Text('Confirm your master password'),
           Padding(
             padding: EdgeInsets.all(16.0),
@@ -110,7 +109,6 @@ class MasterPasswordSetterPage extends StatelessWidget {
                 color: Color(0xff000000),
               ),
               decoration: InputDecoration(
-              
                 disabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0),
                   borderSide: const BorderSide(
@@ -152,27 +150,31 @@ class MasterPasswordSetterPage extends StatelessWidget {
             ),
           ),
 
-         ElevatedButton(
-          onPressed: () async {
-            if (newMasterPassword.text == confirmMasterPassword.text) {
-              await savePassword(newMasterPassword.text);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Master password set successfully!')),
-              );
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MyHomePage(title: 'Password Manager'))
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Passwords do not match!')),
-              );
-            }
-          },
-          child: const Text('Submit'),
-      )],
-      )
+          ElevatedButton(
+            onPressed: () async {
+              if (newMasterPassword.text == confirmMasterPassword.text) {
+                await savePassword(newMasterPassword.text);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Master password set successfully!'),
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(title: 'Password Manager'),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Passwords do not match!')),
+                );
+              }
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
     );
-  } 
-
+  }
 }
