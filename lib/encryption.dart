@@ -6,21 +6,37 @@ import 'package:password_manager/key_derivation.dart';
 import 'package:ntcdcrypto/ntcdcrypto.dart';
 
 // generate key with pbkdf2
-String generateKey(String password) {
-    final salt = generateRandomSalt();
-    return hashPassword(password, salt);
+String generateKey() {
+    final key = encrypt.Key.fromSecureRandom(32);  // 256-bit key for AES-256
+    return base64.encode(key.bytes);
 }
 
-String encryptData(String data, String encryptionKey, String encryptionIv) {
-    final key = encrypt.Key.fromBase64(encryptionKey);
-    final iv = encrypt.IV.fromBase64(encryptionIv);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-    return encrypter.encrypt(data, iv: iv).base64;
+
+// String encryptData(String data, String encryptionKey) {
+//     final key = encrypt.Key.fromBase64(encryptionKey);
+//     final iv = encrypt.IV.fromSecureRandom(16);
+//     final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+//     return encrypter.encrypt(data, iv: iv).base64;
+// }
+
+String encryptData(String data, String encryptionKey) {
+  final key = encrypt.Key.fromBase64(encryptionKey);  // Decode the encryption key
+  final iv = encrypt.IV.fromSecureRandom(16);  // Generate a random IV (16 bytes for AES)
+  final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));  // AES in CBC mode
+
+  final encrypted = encrypter.encrypt(data, iv: iv);  // Encrypt the data with the IV
+  final encryptedData = encrypted.base64;  // Convert to base64 for storage
+
+  // Store IV alongside encrypted data to use during decryption
+  return json.encode({
+    'iv': base64.encode(iv.bytes),  // Store IV in base64
+    'data': encryptedData,  // Store the encrypted data
+  });
 }
 
-String decryptData(String encryptedData, String encryptionKey, String encryptionIv) {
+String decryptData(String encryptedData, String encryptionKey) {
     final key = encrypt.Key.fromBase64(encryptionKey);
-    final iv = encrypt.IV.fromBase64(encryptionIv);
+    final iv = encrypt.IV.fromSecureRandom(16);
     final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
     return encrypter.decrypt(encrypt.Encrypted.fromBase64(encryptedData), iv: iv);
 }

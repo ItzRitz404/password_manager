@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:password_manager/key_derivation.dart';
 import 'package:password_manager/password_menu.dart';
 import 'master_password.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'encryption.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> passwords = [];
+  
   final storage = const FlutterSecureStorage();
 
   @override
@@ -66,10 +70,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> loadKeys() async {
+    // final allKeys = await storage.readAll();
+    // setState(() {
+    //   passwords = allKeys.keys.toList();
+    // });
+
     final allKeys = await storage.readAll();
-    setState(() {
-      passwords = allKeys.keys.toList();
+
+  // Filter only password keys (not encryption keys)
+    final filteredKeys = allKeys.keys
+      .where((k) => k.startsWith('password_'))
+      .toList();
+
+  // Sort by timestamp (newest first)
+    filteredKeys.sort((a, b) {
+      final aTime = int.tryParse(a.split('_').last) ?? 0;
+      final bTime = int.tryParse(b.split('_').last) ?? 0;
+      return bTime.compareTo(aTime);
     });
+
+  setState(() {
+    passwords = filteredKeys;
+  });
   }
 
   Future<void> savePassword() async {
@@ -80,9 +102,34 @@ class _MyHomePageState extends State<MyHomePage> {
       'url': widget.url.text,
     };
 
+    // final jsonData = json.encode(newPassword);
+
+    // // encrypt data
+    // // frist gen a random key and hash it
+    // final key = generateRandomSalt();
+
+    // // encrypt the data using the key
+    // final iv = encrypt.Key.fromSecureRandom(32);
+    // final encryptProcess =  // 16 bytes for AES
+
+    final encryptionKey = generateKey();
+    // final iv
+     // 16 bytes for AES
+
+    final encryptedData = encryptData(
+      json.encode(newPassword),
+      encryptionKey,
+    );
+
+
     final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
-    await storage.write(key: key, value: json.encode(newPassword));
-    await loadKeys();
+    final keyForEncryption = 'key_$key';
+    // await storage.write(key: key, value: encryptedData);
+    await storage.write(key: key, value: encryptedData); // Store the encrypted password
+    await storage.write(key: keyForEncryption, value: encryptionKey); 
+    
+    passwords.insert(0,key);// Store the encryption key
+    await loadKeys(); 
   }
 
   Future<void> deletePassword(String key) async {
@@ -91,8 +138,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Map<String, dynamic>?> getPassword(String key) async {
-    final value = await storage.read(key: key);
-    return value != key ? json.decode(value!) : null;
+    // final value = await storage.read(key: key);
+    // return value != key ? json.decode(value!) : null;
+
+    final encryptedData = await storage.read(key: key);
+    final encryptionKey = await storage.read(key: 'key_$key');
+
+    if (encryptedData == null) {
+      return null; // No data found for the given key
+    } else {
+
+      final decoded = json.decode(encryptedData);
+      final ivBase64 = decoded['iv'];
+      final encryptedDataBase64 = decoded['data']; // Decode the decrypted data
+
+      final keyObj = encrypt.Key.fromBase64(encryptionKey!);
+      final iv = encrypt.IV.fromBase64(ivBase64);
+      final encrypter = encrypt.Encrypter(encrypt.AES(keyObj, mode: encrypt.AESMode.cbc));
+
+      final decrypted = encrypter.decrypt64(encryptedDataBase64, iv: iv);
+
+      return json.decode(decrypted);
+
+    }
   }
 
   // bool viewPassword = false;
@@ -438,16 +506,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               )
               : ListView.builder(
+                
                 itemCount: passwords.length,
                 itemBuilder: (context, index) {
                   final key = passwords[index];
+                  
                   return FutureBuilder<Map<String, dynamic>?>(
                     future: getPassword(key),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return const ListTile(
-                          title: Text('no more data available'),
-                        );
+                        return const SizedBox.shrink();
                       } else if (snapshot.hasData) {
                         final password = snapshot.data!;
                         return Card(
