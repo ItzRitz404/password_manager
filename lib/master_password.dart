@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
 import 'master_password_setter.dart';
@@ -29,7 +28,13 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
     final savedPassword = await storage.read(key: 'master_password');
 
     if (masterPasswordController.text == savedPassword) {
-      widget.passwordEntered(masterPasswordController.text);
+      // widget.passwordEntered(masterPasswordController.text);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyHomePage(title: 'Password Manager'),
+        ),
+      );
     } else {
       setState(() {
         isPasswordCorrect = false;
@@ -132,10 +137,10 @@ class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
   @override
   void initState() {
     super.initState();
-    _checkMasterPassword();
+    checkMasterPassword();
   }
 
-  Future<void> _checkMasterPassword() async {
+  Future<void> checkMasterPassword() async {
     final masterPassword = await storage.read(key: 'master_password');
 
     if (masterPassword == null) {
@@ -151,13 +156,13 @@ class _MasterPasswordCheckState extends State<MasterPasswordCheck> {
         MaterialPageRoute(
           builder:
               (context) =>
-                  MasterPasswordPage(passwordEntered: _passwordEntered),
+                  MasterPasswordPage(passwordEntered: passwordEntered),
         ),
       );
     }
   }
 
-  void _passwordEntered(String password) {
+  void passwordEntered(String password) {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

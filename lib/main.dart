@@ -466,7 +466,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text(password?['application'] ?? ''),
+                                    title: Text(password['application'] ?? ''),
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [

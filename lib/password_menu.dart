@@ -10,13 +10,13 @@ class PasswordMenu extends StatefulWidget {
   final Function(Map<String, String>) onSave;
 
   const PasswordMenu({
-    Key? key,
+    super.key,
     required this.application,
     required this.username,
     required this.password,
     required this.url,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   _PasswordMenuState createState() => _PasswordMenuState();
