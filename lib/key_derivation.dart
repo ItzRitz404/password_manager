@@ -19,7 +19,7 @@ String hashPassword (String password, String salt) {
   final store = utf8.encode(password);
   final hashed = utf8.encode(salt);
   final key = KeyDerivator('SHA-256/HMAC/PBKDF2')
-      ..init(Pbkdf2Parameters(hashed, 1000, 32));
+      ..init(Pbkdf2Parameters(hashed, 10000, 32));
   final derivedKey = key.process(store);
   return base64Url.encode(derivedKey);
  
