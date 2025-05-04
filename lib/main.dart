@@ -352,17 +352,6 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               child: const Text('Add'),
               onPressed: () async {
-                // Add your add action here
-                // setState(() {
-                //   // passwords.add({
-                //   //   'application': widget.application.text,
-                //   //   'username': widget.username.text,
-                //   //   'password': widget.password.text,
-                //   //   'url': widget.url.text,
-                //   // });
-
-                // });
-
                 await savePassword(); // Save the password
 
                 clearFields();
