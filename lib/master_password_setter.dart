@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
+import 'package:password_manager/key_derivation.dart';
 
 final TextEditingController newMasterPassword = TextEditingController();
 final TextEditingController confirmMasterPassword = TextEditingController();
 
-Future<void> savePassword(String password) async {
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
-  await storage.write(key: 'master_password', value: password);
-}
+// Future<void> savePassword(String password) async {
+//   final FlutterSecureStorage storage = const FlutterSecureStorage();
+//   await storage.write(key: 'master_password', value: password);
+// }
 
 class MasterPasswordSetterPage extends StatelessWidget {
   const MasterPasswordSetterPage({super.key});
@@ -152,24 +153,68 @@ class MasterPasswordSetterPage extends StatelessWidget {
 
           ElevatedButton(
             onPressed: () async {
+              // if (newMasterPassword.text == confirmMasterPassword.text) {
+              //   await savePassword(newMasterPassword.text);
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     const SnackBar(
+              //       content: Text('Master password set successfully!'),
+              //     ),
+              //   );
+              //   Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => MyHomePage(title: 'Password Manager'),
+              //     ),
+              //   );
+              // } else {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     const SnackBar(content: Text('Passwords do not match!')),
+              //   );
+              // }
+
               if (newMasterPassword.text == confirmMasterPassword.text) {
-                await savePassword(newMasterPassword.text);
+                final password = newMasterPassword.text;
+                final salt = generateRandomSalt();
+                final hashedPassword = hashPassword(password, salt);
+
+                final recoveryCode = generateRecoveryCode();
+                final recoveryCodeHash = hashPassword(recoveryCode, salt);
+
+                final storage = const FlutterSecureStorage();
+                await storage.write(key: 'master_password', value: hashedPassword);
+                await storage.write(key: 'salt', value: salt);
+                await storage.write(key: 'recovery_code', value: recoveryCodeHash);
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Master password set successfully!'),
                   ),
                 );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MyHomePage(title: 'Password Manager'),
+
+                showDialog(
+                  context: context, 
+                  builder: (context) => AlertDialog(
+                    title: const Text('Recovery Code'),
+                    content: Text('Your recovery code is: $recoveryCode.\n'
+                        'Please keep it safe.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MyHomePage(title: 'Password Manager'),
+                            ),
+                          );
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ]
                   ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Passwords do not match!')),
-                );
+                  );
               }
+              
             },
             child: const Text('Submit'),
           ),

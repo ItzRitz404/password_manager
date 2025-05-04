@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
 import 'master_password_setter.dart';
+// import 'key_derivation.dart';
+import 'package:password_manager/key_derivation.dart';
 
 class MasterPasswordPage extends StatefulWidget {
   final Function(String) passwordEntered;
@@ -114,7 +116,26 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: checkPassword,
+              onPressed: () async {
+                final masterPassword = masterPasswordController.text;
+                final isValid = await verifyPassword(masterPassword);
+
+                if (isValid) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyHomePage(title: 'Password Manager'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Incorrect password!'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+              },
               child: const Text('Submit'),
             ),
           ],
