@@ -334,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.settings),
             tooltip: 'Settings',
             onPressed: () async {
-              final settings = await Navigator.push(
+             await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const SettingsPage()),
                 );
@@ -346,15 +346,6 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.add),
             tooltip: 'Add Password',
             onPressed: () async {
-              // await Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => PasswordMenu(application: widget.application, username: widget.username, password: widget.password, url: widget.url, onSave: (newPassword) {
-              //     setState(() {
-              //       passwords.add(newPassword);
-              //     });
-              //   })),
-              // );// Show the add password dialog
-
               await addPasswordMenu(context); // Show the add password dialog
             },
           ),
