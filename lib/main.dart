@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'master_password.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'encryption.dart';
+import 'settings.dart';
+import 'passwordGenerator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -477,17 +479,50 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: 'Password',
                     controller: widget.password,
                     obscure: !viewPassword,
-                    suffix: IconButton(
-                      icon: Icon(
-                        viewPassword ? Icons.visibility : Icons.visibility_off,
-                        color: viewPassword ? Colors.blue : Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          viewPassword = !viewPassword;
-                        });
-                      },
+                    suffix: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            viewPassword ? Icons.visibility : Icons.visibility_off,
+                            color: viewPassword ? Colors.blue : Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              viewPassword = !viewPassword;
+                            });
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.refresh, color: Colors.green),
+                          tooltip: 'Generate Password',
+                          onPressed: () async {
+                             final settings = await storage.readAll();
+
+                            final int length = int.tryParse(settings['gen_length'] ?? '12') ?? 12;
+                            final bool uppercase = settings['gen_uppercase'] != 'false';
+                            final bool numbers = settings['gen_numbers'] != 'false';
+                            final bool symbols = settings['gen_symbols'] != 'false';
+
+                            final generated = generatePassword(
+                              length: length,
+                              includeUppercase: uppercase,
+                              includeNumbers: numbers,
+                              includeSymbols: symbols,
+                            );
+
+                            setState(() {
+                              widget.password.text = generated;
+                            }); // call your generator
+                            setState(() {
+                              widget.password.text = generated;
+                              viewPassword = true;
+                            });
+                          },
+                        ),
+                      ],
                     ),
+                    
                   ),
                   _buildStyledField(
                     icon: Icons.link,
@@ -565,7 +600,11 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: 'Settings',
-            onPressed: () {
+            onPressed: () async {
+              final settings = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsPage()),
+                );
               // Add your settings action here
             },
           ),

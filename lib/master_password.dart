@@ -4,6 +4,7 @@ import 'package:password_manager/main.dart';
 import 'master_password_setter.dart';
 // import 'key_derivation.dart';
 import 'package:password_manager/key_derivation.dart';
+import 'recoveryPage.dart';
 
 class MasterPasswordPage extends StatefulWidget {
   final Function(String) passwordEntered;
@@ -121,6 +122,23 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RecoveryPage()), // Create this screen
+                    );
+                  },
+                  child: const Text(
+                    'Forgot Password? Recover Account',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+
               ],
             ),
           ),

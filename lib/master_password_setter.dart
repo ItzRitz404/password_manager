@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
 import 'package:password_manager/key_derivation.dart';
+import 'package:flutter/services.dart';
 
 // final TextEditingController newMasterPassword = TextEditingController();
 // final TextEditingController confirmMasterPassword = TextEditingController();
@@ -291,8 +292,28 @@ class _MasterPasswordSetterPageState extends State<MasterPasswordSetterPage> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: const Text('Recovery Code'),
-                                  content: Text(
-                                      'Your recovery code is:\n\n$recoveryCode\n\nPlease store it safely.'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Your recovery code is:\n\n$recoveryCode\n\nPlease store it safely.'),
+                                      const SizedBox(height: 12),
+                                      ElevatedButton.icon(
+                                        onPressed: () {
+                                          Clipboard.setData(ClipboardData(text: recoveryCode));
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Copied to clipboard')),
+                                          );
+                                        },
+                                        icon: const Icon(Icons.copy),
+                                        label: const Text('Copy'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blueAccent,
+                                          foregroundColor: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -300,8 +321,7 @@ class _MasterPasswordSetterPageState extends State<MasterPasswordSetterPage> {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                MyHomePage(title: 'Password Manager'),
+                                            builder: (context) => MyHomePage(title: 'Password Manager'),
                                           ),
                                         );
                                       },
