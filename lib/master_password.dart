@@ -26,24 +26,6 @@ class _MasterPasswordPageState extends State<MasterPasswordPage> {
     super.initState();
   }
 
-  // Future<void> checkPassword() async {
-  //   final savedPassword = await storage.read(key: 'master_password');
-
-  //   if (masterPasswordController.text == savedPassword) {
-  //     // widget.passwordEntered(masterPasswordController.text);
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => MyHomePage(title: 'Password Manager'),
-  //       ),
-  //     );
-  //   } else {
-  //     setState(() {
-  //       isPasswordCorrect = false;
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

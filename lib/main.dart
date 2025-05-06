@@ -94,7 +94,50 @@ class _MyHomePageState extends State<MyHomePage> {
   });
   }
 
-  Future<void> savePassword() async {
+  // Future<void> savePassword() async {
+  //   final newPassword = {
+  //     'application': widget.application.text,
+  //     'username': widget.username.text,
+  //     'password': widget.password.text,
+  //     'url': widget.url.text,
+  //   };
+
+  //   // final jsonData = json.encode(newPassword);
+
+  //   // // encrypt data
+  //   // // frist gen a random key and hash it
+  //   // final key = generateRandomSalt();
+
+  //   // // encrypt the data using the key
+  //   // final iv = encrypt.Key.fromSecureRandom(32);
+  //   // final encryptProcess =  // 16 bytes for AES
+
+  //   final encryptionKey = generateKey();
+  //   // final iv
+  //    // 16 bytes for AES
+
+  //   final encryptedData = encryptData(
+  //     json.encode(newPassword),
+  //     encryptionKey,
+  //   );
+
+
+  //   final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
+  //   final keyForEncryption = 'key_$key';
+  //   // await storage.write(key: key, value: encryptedData);
+  //   await storage.write(key: key, value: encryptedData); // Store the encrypted password
+  //   await storage.write(key: keyForEncryption, value: encryptionKey); 
+    
+  //   passwords.insert(0,key);// Store the encryption key
+  //   await loadKeys(); 
+  // }
+
+  Future<void> deletePassword(String key) async {
+    await storage.delete(key: key);
+    await loadKeys();
+  }
+
+  Future<void> savePassword () async {
     final newPassword = {
       'application': widget.application.text,
       'username': widget.username.text,
@@ -102,65 +145,87 @@ class _MyHomePageState extends State<MyHomePage> {
       'url': widget.url.text,
     };
 
-    // final jsonData = json.encode(newPassword);
-
-    // // encrypt data
-    // // frist gen a random key and hash it
-    // final key = generateRandomSalt();
-
-    // // encrypt the data using the key
-    // final iv = encrypt.Key.fromSecureRandom(32);
-    // final encryptProcess =  // 16 bytes for AES
-
+    // gen AES key
     final encryptionKey = generateKey();
-    // final iv
-     // 16 bytes for AES
+    final shares = splitKey(encryptionKey, 3, 5); // Split the key into 5 shares with a threshold of 3
+
+    // store shares
+    for (int i = 0; i < shares.length; i++) {
+      await storage.write(key: 'key_${i + 1}', value: shares[i]);
+    }
 
     final encryptedData = encryptData(
       json.encode(newPassword),
       encryptionKey,
     );
 
-
     final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
-    final keyForEncryption = 'key_$key';
-    // await storage.write(key: key, value: encryptedData);
     await storage.write(key: key, value: encryptedData); // Store the encrypted password
-    await storage.write(key: keyForEncryption, value: encryptionKey); 
-    
-    passwords.insert(0,key);// Store the encryption key
-    await loadKeys(); 
+
+    passwords.insert(0, key); // Store the encryption key
+    await loadKeys(); // Reload the keys to update the UI
   }
 
-  Future<void> deletePassword(String key) async {
-    await storage.delete(key: key);
-    await loadKeys();
-  }
+  // Future<Map<String, dynamic>?> getPassword(String key) async {
+  //   // final value = await storage.read(key: key);
+  //   // return value != key ? json.decode(value!) : null;
 
-  Future<Map<String, dynamic>?> getPassword(String key) async {
-    // final value = await storage.read(key: key);
-    // return value != key ? json.decode(value!) : null;
+  //   final encryptedData = await storage.read(key: key);
+  //   final encryptionKey = await storage.read(key: 'key_$key');
 
+  //   if (encryptedData == null) {
+  //     return null; // No data found for the given key
+  //   } else {
+
+  //     final decoded = json.decode(encryptedData);
+  //     final ivBase64 = decoded['iv'];
+  //     final encryptedDataBase64 = decoded['data']; // Decode the decrypted data
+
+  //     final keyObj = encrypt.Key.fromBase64(encryptionKey!);
+  //     final iv = encrypt.IV.fromBase64(ivBase64);
+  //     final encrypter = encrypt.Encrypter(encrypt.AES(keyObj, mode: encrypt.AESMode.cbc));
+
+  //     final decrypted = encrypter.decrypt64(encryptedDataBase64, iv: iv);
+
+  //     return json.decode(decrypted);
+
+  //   }
+  // }
+
+  Future<Map<String, dynamic>?> getPassword (String key) async {
     final encryptedData = await storage.read(key: key);
-    final encryptionKey = await storage.read(key: 'key_$key');
-
+    
     if (encryptedData == null) {
-      return null; // No data found for the given key
-    } else {
-
-      final decoded = json.decode(encryptedData);
-      final ivBase64 = decoded['iv'];
-      final encryptedDataBase64 = decoded['data']; // Decode the decrypted data
-
-      final keyObj = encrypt.Key.fromBase64(encryptionKey!);
-      final iv = encrypt.IV.fromBase64(ivBase64);
-      final encrypter = encrypt.Encrypter(encrypt.AES(keyObj, mode: encrypt.AESMode.cbc));
-
-      final decrypted = encrypter.decrypt64(encryptedDataBase64, iv: iv);
-
-      return json.decode(decrypted);
-
+      return null;
     }
+
+    final List<String> shares = [];
+    // for (int i = 0; i <= 5; i++) {
+    //   final share = await storage.read(key: 'sss_share_$i');
+    //   if (share != null) {
+    //     shares.add(share.toString());
+    //   }
+    //   if (shares.length >= 3) {
+    //     break;
+    //   }
+    // }
+    // if (shares.length < 3) {
+    //   throw Exception('not enough shres'); // Not enough shares to reconstruct the key
+    // }
+
+    for (int i = 0; i < 5; i++) {
+      final share = await storage.read(key: 'key_${i + 1}');
+      if (share != null) {
+        shares.add(share); // Ensured to be String
+      }
+      if (shares.length >= 3) break;
+    }
+
+    final recontructedKey = reconstructKey(shares);
+
+    final Map<String, dynamic> decrypted = decryptData(encryptedData, recontructedKey);
+    return decrypted;
+    
   }
 
   // bool viewPassword = false;
@@ -566,26 +631,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   );
 
-                  // Column is also a layout widget. It takes a list of children and
-                  // arranges them vertically. By default, it sizes itself to fit its
-                  // children horizontally, and tries to be as tall as its parent.
-                  //
-                  // Column has various properties to control how it sizes itself and
-                  // how it positions its children. Here we use mainAxisAlignment to
-                  // center the children vertically; the main axis here is the vertical
-                  // axis because Columns are vertical (the cross axis would be
-                  // horizontal).
-                  //
-                  // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-                  // action in the IDE, or press "p" in the console), to see the
-                  // wireframe for each widget.
-
-                  // The Text widget displays the value of the counter variable.
-                  // The counter variable is defined in the _MyHomePageState class.
-                  // The Text widget is a stateless widget, meaning it does not have
-                  // any mutable state. It is used to display text on the screen.
-
-                  // This trailing comma makes auto-formatting nicer for build methods.
+            
                 },
               ),
     );
