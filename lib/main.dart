@@ -102,12 +102,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> loadKeys() async {
     final allKeys = await storage.readAll();
 
-  // Filter only password keys (not encryption keys)
+  // Filter only password keys 
     final filteredKeys = allKeys.keys
       .where((k) => k.startsWith('password_'))
       .toList();
 
-  // Sort by timestamp (newest first)
+  // Sort by time
     filteredKeys.sort((a, b) {
       final aTime = int.tryParse(a.split('_').last) ?? 0;
       final bTime = int.tryParse(b.split('_').last) ?? 0;
@@ -230,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           icon: const Icon(Icons.refresh, color: Colors.green),
                           tooltip: 'Generate Password',
                           onPressed: () async {
-                             final settings = await storage.readAll();
+                            final settings = await storage.readAll();
 
                             final int length = int.tryParse(settings['gen_length'] ?? '12') ?? 12;
                             final bool uppercase = settings['gen_uppercase'] != 'false';
