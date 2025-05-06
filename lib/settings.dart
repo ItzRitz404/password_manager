@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/key_derivation.dart';
-import 'package:password_manager/passwordGenerator.dart';
+import 'package:password_manager/password_generator.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

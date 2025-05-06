@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
 
 String generatePassword({
   int length = 12,
