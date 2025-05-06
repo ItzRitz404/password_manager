@@ -37,15 +37,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   final TextEditingController application = TextEditingController();
@@ -70,11 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> loadKeys() async {
-    // final allKeys = await storage.readAll();
-    // setState(() {
-    //   passwords = allKeys.keys.toList();
-    // });
-
     final allKeys = await storage.readAll();
 
   // Filter only password keys (not encryption keys)
@@ -94,44 +80,6 @@ class _MyHomePageState extends State<MyHomePage> {
   });
   }
 
-  // Future<void> savePassword() async {
-  //   final newPassword = {
-  //     'application': widget.application.text,
-  //     'username': widget.username.text,
-  //     'password': widget.password.text,
-  //     'url': widget.url.text,
-  //   };
-
-  //   // final jsonData = json.encode(newPassword);
-
-  //   // // encrypt data
-  //   // // frist gen a random key and hash it
-  //   // final key = generateRandomSalt();
-
-  //   // // encrypt the data using the key
-  //   // final iv = encrypt.Key.fromSecureRandom(32);
-  //   // final encryptProcess =  // 16 bytes for AES
-
-  //   final encryptionKey = generateKey();
-  //   // final iv
-  //    // 16 bytes for AES
-
-  //   final encryptedData = encryptData(
-  //     json.encode(newPassword),
-  //     encryptionKey,
-  //   );
-
-
-  //   final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
-  //   final keyForEncryption = 'key_$key';
-  //   // await storage.write(key: key, value: encryptedData);
-  //   await storage.write(key: key, value: encryptedData); // Store the encrypted password
-  //   await storage.write(key: keyForEncryption, value: encryptionKey); 
-    
-  //   passwords.insert(0,key);// Store the encryption key
-  //   await loadKeys(); 
-  // }
-
   Future<void> deletePassword(String key) async {
     await storage.delete(key: key);
     await loadKeys();
@@ -148,10 +96,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // gen AES key
     final encryptionKey = generateKey();
     final shares = splitKey(encryptionKey, 3, 5); // Split the key into 5 shares with a threshold of 3
+    final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
 
     // store shares
     for (int i = 0; i < shares.length; i++) {
-      await storage.write(key: 'key_${i + 1}', value: shares[i]);
+      await storage.write(key: '${key}_share_$i', value: shares[i]);
     }
 
     final encryptedData = encryptData(
@@ -159,38 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
       encryptionKey,
     );
 
-    final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
     await storage.write(key: key, value: encryptedData); // Store the encrypted password
 
     passwords.insert(0, key); // Store the encryption key
     await loadKeys(); // Reload the keys to update the UI
   }
 
-  // Future<Map<String, dynamic>?> getPassword(String key) async {
-  //   // final value = await storage.read(key: key);
-  //   // return value != key ? json.decode(value!) : null;
-
-  //   final encryptedData = await storage.read(key: key);
-  //   final encryptionKey = await storage.read(key: 'key_$key');
-
-  //   if (encryptedData == null) {
-  //     return null; // No data found for the given key
-  //   } else {
-
-  //     final decoded = json.decode(encryptedData);
-  //     final ivBase64 = decoded['iv'];
-  //     final encryptedDataBase64 = decoded['data']; // Decode the decrypted data
-
-  //     final keyObj = encrypt.Key.fromBase64(encryptionKey!);
-  //     final iv = encrypt.IV.fromBase64(ivBase64);
-  //     final encrypter = encrypt.Encrypter(encrypt.AES(keyObj, mode: encrypt.AESMode.cbc));
-
-  //     final decrypted = encrypter.decrypt64(encryptedDataBase64, iv: iv);
-
-  //     return json.decode(decrypted);
-
-  //   }
-  // }
 
   Future<Map<String, dynamic>?> getPassword (String key) async {
     final encryptedData = await storage.read(key: key);
@@ -200,21 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final List<String> shares = [];
-    // for (int i = 0; i <= 5; i++) {
-    //   final share = await storage.read(key: 'sss_share_$i');
-    //   if (share != null) {
-    //     shares.add(share.toString());
-    //   }
-    //   if (shares.length >= 3) {
-    //     break;
-    //   }
-    // }
-    // if (shares.length < 3) {
-    //   throw Exception('not enough shres'); // Not enough shares to reconstruct the key
-    // }
-
     for (int i = 0; i < 5; i++) {
-      final share = await storage.read(key: 'key_${i + 1}');
+      final share = await storage.read(key: '${key}_share_$i');
       if (share != null) {
         shares.add(share); // Ensured to be String
       }
@@ -227,8 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return decrypted;
     
   }
-
-  // bool viewPassword = false;
 
   Future<String?> addPasswordMenu(context) {
     bool viewPassword = false;
@@ -592,38 +500,67 @@ class _MyHomePageState extends State<MyHomePage> {
                               onPressed: () => deletePassword(key),
                             ),
                             onTap: () {
-                              // Handle tap on the ListTile
-                              // You can navigate to a detail page or show more information
-                              // about the selected password entry here.
                               showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text(password['application'] ?? ''),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          'Username: ${password['username'] ?? ''}',
-                                        ),
-                                        Text(
-                                          'Password: ${password['password'] ?? ''}',
-                                        ),
-                                        Text('URL: ${password['url'] ?? ''}'),
-                                      ],
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('OK'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(password['application'] ?? ''),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.person, size: 20),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              'Username: ${password['username'] ?? ''}',
+                                              style: const TextStyle(fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.lock, size: 20),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              'Password: ${password['password'] ?? ''}',
+                                              style: const TextStyle(fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.link, size: 20),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              'URL: ${password['url'] ?? ''}',
+                                              style: const TextStyle(fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
-                                  );
-                                },
-                              );
-                            },
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                           ),
                         );
                       }
