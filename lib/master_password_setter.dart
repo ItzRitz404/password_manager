@@ -3,24 +3,213 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:password_manager/main.dart';
 import 'package:password_manager/key_derivation.dart';
 
-final TextEditingController newMasterPassword = TextEditingController();
-final TextEditingController confirmMasterPassword = TextEditingController();
+// final TextEditingController newMasterPassword = TextEditingController();
+// final TextEditingController confirmMasterPassword = TextEditingController();
 
-// Future<void> savePassword(String password) async {
-//   final FlutterSecureStorage storage = const FlutterSecureStorage();
-//   await storage.write(key: 'master_password', value: password);
+// // Future<void> savePassword(String password) async {
+// //   final FlutterSecureStorage storage = const FlutterSecureStorage();
+// //   await storage.write(key: 'master_password', value: password);
+// // }
+
+// class MasterPasswordSetterPage extends StatelessWidget {
+//   const MasterPasswordSetterPage({super.key});
+
+//   // final TextEditingController newMasterPassword = TextEditingController();
+//   // final TextEditingController confirmMasterPassword = TextEditingController();
+
+//   // Future<void> savePassword (String password) async {
+//   //   final FlutterSecureStorage storage = const FlutterSecureStorage();
+//   //   await storage.write(key: 'master_password', value: password);
+//   // }
+
+// //   
+// @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//     backgroundColor: const Color(0xFFC6E6FB),
+//     appBar: AppBar(
+//       backgroundColor: const Color(0xFF0047AB),
+//       title: const Text(
+//         'Set Master Password',
+//         style: TextStyle(
+//           color: Colors.white,
+//           fontSize: 22,
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//       centerTitle: true,
+//     ),
+//     body: Center(
+//       child: SingleChildScrollView(
+//         padding: const EdgeInsets.all(24),
+//         child: Card(
+//           elevation: 6,
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(12),
+//           ),
+//           child: Padding(
+//             padding: const EdgeInsets.all(24),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 const Text(
+//                   'Create a Master Password',
+//                   style: TextStyle(
+//                     fontSize: 20,
+//                     fontWeight: FontWeight.w700,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 12),
+//                 const Text(
+//                   'This password will be used to encrypt and access your stored credentials.',
+//                   textAlign: TextAlign.center,
+//                   style: TextStyle(fontSize: 14, color: Colors.black54),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 _buildPasswordField(
+//                   controller: newMasterPassword,
+//                   label: "New Password",
+//                   icon: Icons.lock_outline,
+//                 ),
+//                 const SizedBox(height: 16),
+//                 _buildPasswordField(
+//                   controller: confirmMasterPassword,
+//                   label: "Confirm Password",
+//                   icon: Icons.lock,
+//                 ),
+//                 const SizedBox(height: 24),
+//                 SizedBox(
+//                   width: double.infinity,
+//                   child: ElevatedButton.icon(
+//                     onPressed: () async {
+//                       if (newMasterPassword.text == confirmMasterPassword.text) {
+//                         final password = newMasterPassword.text;
+//                         final salt = generateRandomSalt();
+//                         final hashedPassword = hashPassword(password, salt);
+//                         final recoveryCode = generateRecoveryCode();
+//                         final recoveryCodeHash = hashPassword(recoveryCode, salt);
+
+//                         final storage = const FlutterSecureStorage();
+//                         await storage.write(key: 'master_password', value: hashedPassword);
+//                         await storage.write(key: 'salt', value: salt);
+//                         await storage.write(key: 'recovery_code', value: recoveryCodeHash);
+
+//                         ScaffoldMessenger.of(context).showSnackBar(
+//                           const SnackBar(content: Text('Master password set successfully!')),
+//                         );
+
+//                         showDialog(
+//                           context: context,
+//                           builder: (context) => AlertDialog(
+//                             title: const Text('Recovery Code'),
+//                             content: Text('Your recovery code is:\n\n$recoveryCode\n\nPlease store it safely.'),
+//                             actions: [
+//                               TextButton(
+//                                 onPressed: () {
+//                                   Navigator.of(context).pop();
+//                                   Navigator.pushReplacement(
+//                                     context,
+//                                     MaterialPageRoute(
+//                                       builder: (context) => MyHomePage(title: 'Password Manager'),
+//                                     ),
+//                                   );
+//                                 },
+//                                 child: const Text('OK'),
+//                               ),
+//                             ],
+//                           ),
+//                         );
+//                       } else {
+//                         ScaffoldMessenger.of(context).showSnackBar(
+//                           const SnackBar(
+//                             content: Text('Passwords do not match!'),
+//                             backgroundColor: Colors.red,
+//                           ),
+//                         );
+//                       }
+//                     },
+//                     icon: const Icon(Icons.check),
+//                     label: const Text(
+//                       'Submit',
+//                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//                     ),
+//                     style: ElevatedButton.styleFrom(
+//                       backgroundColor: const Color(0xFF0047AB),
+//                       padding: const EdgeInsets.symmetric(vertical: 14),
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(8),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     ),
+//   );
 // }
 
-class MasterPasswordSetterPage extends StatelessWidget {
+// // 🔧 Helper Method for Input Fields
+// Widget _buildPasswordField({
+//   required TextEditingController controller,
+//   required String label,
+//   required IconData icon,
+// }) {
+//   return TextField(
+//     controller: controller,
+//     obscureText: true,
+//     decoration: InputDecoration(
+//       labelText: label,
+//       prefixIcon: Icon(icon),
+//       border: OutlineInputBorder(
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       filled: true,
+//       fillColor: Colors.white,
+//     ),
+//   );
+// }}
+
+class MasterPasswordSetterPage extends StatefulWidget {
   const MasterPasswordSetterPage({super.key});
 
-  // final TextEditingController newMasterPassword = TextEditingController();
-  // final TextEditingController confirmMasterPassword = TextEditingController();
+  @override
+  State<MasterPasswordSetterPage> createState() => _MasterPasswordSetterPageState();
+}
 
-  // Future<void> savePassword (String password) async {
-  //   final FlutterSecureStorage storage = const FlutterSecureStorage();
-  //   await storage.write(key: 'master_password', value: password);
-  // }
+class _MasterPasswordSetterPageState extends State<MasterPasswordSetterPage> {
+  final TextEditingController newMasterPassword = TextEditingController();
+  final TextEditingController confirmMasterPassword = TextEditingController();
+
+  bool isButtonEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    newMasterPassword.addListener(_validate);
+    confirmMasterPassword.addListener(_validate);
+  }
+
+  void _validate() {
+    final pw = newMasterPassword.text;
+    final confirmPw = confirmMasterPassword.text;
+    final isValid = pw.length >= 8 && pw == confirmPw;
+
+    if (isValid != isButtonEnabled) {
+      setState(() {
+        isButtonEnabled = isValid;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    newMasterPassword.dispose();
+    confirmMasterPassword.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,194 +220,139 @@ class MasterPasswordSetterPage extends StatelessWidget {
         title: const Text(
           'Set Master Password',
           style: TextStyle(
-            color: Color(0xFFFF7F50),
-            fontWeight: FontWeight.w900,
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Enter a new master password'),
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: TextFormField(
-              controller: newMasterPassword,
-              obscureText: false,
-              textAlign: TextAlign.start,
-              maxLines: 1,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontStyle: FontStyle.normal,
-                fontSize: 16,
-                color: Color(0xff000000),
-              ),
-              decoration: InputDecoration(
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                  borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                  borderSide: const BorderSide(
-                    color: Color(0xff9e9e9e),
-                    width: 1,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                  borderSide: const BorderSide(
-                    color: Color(0xff9e9e9e),
-                    width: 1,
-                  ),
-                ),
-                labelText: "Enter New Password",
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 16,
-                  color: Color(0xff9e9e9e),
-                ),
-                prefixIcon: const Icon(Icons.security),
-                filled: true,
-                fillColor: Colors.white,
-                isDense: false,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 12,
-                ),
-                icon: const Icon(Icons.security),
-              ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Card(
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-          ),
-          const Text('Confirm your master password'),
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: TextFormField(
-              controller: confirmMasterPassword,
-              obscureText: false,
-              textAlign: TextAlign.start,
-              maxLines: 1,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontStyle: FontStyle.normal,
-                fontSize: 16,
-                color: Color(0xff000000),
-              ),
-              decoration: InputDecoration(
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                  borderSide: const BorderSide(
-                    color: Color.fromARGB(255, 255, 255, 255),
-                    width: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Create a Master Password',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                  borderSide: const BorderSide(
-                    color: Color(0xff9e9e9e),
-                    width: 1,
+                  const SizedBox(height: 12),
+                  const Text(
+                    'This password will be used to encrypt and access your stored credentials.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                  borderSide: const BorderSide(
-                    color: Color(0xff9e9e9e),
-                    width: 1,
+                  const SizedBox(height: 24),
+                  _buildPasswordField(
+                    controller: newMasterPassword,
+                    label: "New Password",
+                    icon: Icons.lock_outline,
+                    
                   ),
-                ),
-                labelText: "Enter New Password",
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 16,
-                  color: Color(0xff9e9e9e),
-                ),
-                prefixIcon: const Icon(Icons.security),
-                filled: true,
-                fillColor: Colors.white,
-                isDense: false,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 12,
-                ),
-                icon: const Icon(Icons.security),
-              ),
-            ),
-          ),
-
-          ElevatedButton(
-            onPressed: () async {
-              // if (newMasterPassword.text == confirmMasterPassword.text) {
-              //   await savePassword(newMasterPassword.text);
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     const SnackBar(
-              //       content: Text('Master password set successfully!'),
-              //     ),
-              //   );
-              //   Navigator.pushReplacement(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => MyHomePage(title: 'Password Manager'),
-              //     ),
-              //   );
-              // } else {
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     const SnackBar(content: Text('Passwords do not match!')),
-              //   );
-              // }
-
-              if (newMasterPassword.text == confirmMasterPassword.text) {
-                final password = newMasterPassword.text;
-                final salt = generateRandomSalt();
-                final hashedPassword = hashPassword(password, salt);
-
-                final recoveryCode = generateRecoveryCode();
-                final recoveryCodeHash = hashPassword(recoveryCode, salt);
-
-                final storage = const FlutterSecureStorage();
-                await storage.write(key: 'master_password', value: hashedPassword);
-                await storage.write(key: 'salt', value: salt);
-                await storage.write(key: 'recovery_code', value: recoveryCodeHash);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Master password set successfully!'),
+                  const SizedBox(height: 16),
+                  _buildPasswordField(
+                    controller: confirmMasterPassword,
+                    label: "Confirm Password",
+                    icon: Icons.lock,
                   ),
-                );
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: isButtonEnabled
+                          ? () async {
+                              final password = newMasterPassword.text;
+                              final salt = generateRandomSalt();
+                              final hashedPassword = hashPassword(password, salt);
+                              final recoveryCode = generateRecoveryCode();
+                              final recoveryCodeHash = hashPassword(recoveryCode, salt);
 
-                showDialog(
-                  context: context, 
-                  builder: (context) => AlertDialog(
-                    title: const Text('Recovery Code'),
-                    content: Text('Your recovery code is: $recoveryCode.\n'
-                        'Please keep it safe.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MyHomePage(title: 'Password Manager'),
-                            ),
-                          );
-                        },
-                        child: const Text('OK'),
+                              final storage = const FlutterSecureStorage();
+                              await storage.write(key: 'master_password', value: hashedPassword);
+                              await storage.write(key: 'salt', value: salt);
+                              await storage.write(key: 'recovery_code', value: recoveryCodeHash);
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Master password set successfully!')),
+                              );
+
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Recovery Code'),
+                                  content: Text(
+                                      'Your recovery code is:\n\n$recoveryCode\n\nPlease store it safely.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MyHomePage(title: 'Password Manager'),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          : null,
+                      icon: const Icon(Icons.check),
+                      label: const Text(
+                        'Submit',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                    ]
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isButtonEnabled ? const Color(0xFF0047AB) : Colors.grey,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
                   ),
-                  );
-              }
-              
-            },
-            child: const Text('Submit'),
+                ],
+              ),
+            ),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  // 🔧 Helper Method for Input Fields
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: true,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
     );
   }

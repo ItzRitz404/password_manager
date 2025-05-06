@@ -1,13 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:password_manager/key_derivation.dart';
-import 'package:password_manager/password_menu.dart';
 import 'master_password.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'encryption.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 void main() {
   runApp(const MyApp());
@@ -50,6 +46,47 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> passwords = [];
+
+  Widget _buildStyledField({
+    required IconData icon,
+    required String label,
+    required TextEditingController controller,
+    bool obscure = false,
+    Widget? suffix,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6.0),
+    child: TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(
+        fontFamily: 'RobotoMono',
+        fontSize: 16,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          fontFamily: 'Roboto',
+          fontWeight: FontWeight.w500,
+        ),
+        icon: Icon(icon),
+        filled: true,
+        fillColor: Colors.white,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: Color(0xFF0051A3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: Color(0xFF0051A3), width: 1.5),
+        ),
+        suffixIcon: suffix,
+      ),
+    ),
+  );
+}
   
   final storage = const FlutterSecureStorage();
 
@@ -138,272 +175,357 @@ class _MyHomePageState extends State<MyHomePage> {
     
   }
 
+  // Future<String?> addPasswordMenu(context) {
+  //   bool viewPassword = false;
+  //   return showDialog<String>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Add Password'),
+  //         content: StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setState) {
+  //             return SingleChildScrollView(
+  //               child: ListBody(
+  //                 children: <Widget>[
+  //                   TextFormField(
+  //                     controller: widget.application,
+  //                     obscureText: false,
+  //                     textAlign: TextAlign.start,
+  //                     maxLines: 1,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w400,
+  //                       fontStyle: FontStyle.normal,
+  //                       color: Color(0xff000000),
+  //                     ),
+  //                     decoration: InputDecoration(
+  //                       disabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       focusedBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       enabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       labelText: 'Application',
+  //                       labelStyle: const TextStyle(
+  //                         fontSize: 16,
+  //                         fontWeight: FontWeight.w400,
+  //                         fontStyle: FontStyle.normal,
+  //                         color: Color(0xff000000),
+  //                       ),
+  //                       filled: true,
+  //                       fillColor: const Color(0xFFFFFFFF),
+  //                       isDense: false,
+  //                       contentPadding: const EdgeInsets.symmetric(
+  //                         vertical: 8.0,
+  //                         horizontal: 12.0,
+  //                       ),
+  //                       icon: const Icon(Icons.apps_sharp),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 9.0, width: 500.0),
+
+  //                   TextFormField(
+  //                     controller: widget.username,
+  //                     obscureText: false,
+  //                     textAlign: TextAlign.start,
+  //                     maxLines: 1,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w400,
+  //                       fontStyle: FontStyle.normal,
+  //                       color: Color(0xff000000),
+  //                     ),
+  //                     decoration: InputDecoration(
+  //                       disabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       focusedBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       enabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       labelText: 'Username',
+  //                       labelStyle: const TextStyle(
+  //                         fontSize: 16,
+  //                         fontWeight: FontWeight.w400,
+  //                         fontStyle: FontStyle.normal,
+  //                         color: Color(0xff000000),
+  //                       ),
+  //                       filled: true,
+  //                       fillColor: const Color(0xFFFFFFFF),
+  //                       isDense: false,
+  //                       contentPadding: const EdgeInsets.symmetric(
+  //                         vertical: 8.0,
+  //                         horizontal: 12.0,
+  //                       ),
+  //                       icon: const Icon(Icons.person),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 9.0, width: 500.0),
+
+  //                   TextFormField(
+  //                     controller: widget.password,
+  //                     obscureText: !viewPassword,
+  //                     textAlign: TextAlign.start,
+  //                     maxLines: 1,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w400,
+  //                       fontStyle: FontStyle.normal,
+  //                       color: Color(0xff000000),
+  //                     ),
+  //                     decoration: InputDecoration(
+  //                       disabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       focusedBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       enabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       labelText: 'Password',
+  //                       labelStyle: const TextStyle(
+  //                         fontSize: 16,
+  //                         fontWeight: FontWeight.w400,
+  //                         fontStyle: FontStyle.normal,
+  //                         color: Color(0xff000000),
+  //                       ),
+  //                       suffixIcon: IconButton(
+  //                         // icon: Icon(
+  //                         //   Icons.remove_red_eye,
+  //                         //   color: viewPassword ? Colors.blue : Colors.grey,
+  //                         // ),
+  //                         // onPressed: () {
+  //                         //   setState(() => viewPassword = !viewPassword);
+  //                         // },
+  //                         icon: Icon(
+  //                           viewPassword
+  //                               ? Icons.visibility
+  //                               : Icons.visibility_off,
+  //                           color: viewPassword ? Colors.blue : Colors.grey,
+  //                         ),
+  //                         onPressed: () {
+  //                           setState(() {
+  //                             viewPassword = !viewPassword;
+  //                           });
+  //                         },
+  //                       ),
+  //                       filled: true,
+  //                       fillColor: const Color(0xFFFFFFFF),
+  //                       isDense: false,
+  //                       contentPadding: const EdgeInsets.symmetric(
+  //                         vertical: 8.0,
+  //                         horizontal: 12.0,
+  //                       ),
+  //                       icon: const Icon(Icons.security),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 9.0, width: 500.0),
+
+  //                   TextFormField(
+  //                     controller: widget.url,
+  //                     obscureText: false,
+  //                     textAlign: TextAlign.start,
+  //                     maxLines: 1,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w400,
+  //                       fontStyle: FontStyle.normal,
+  //                       color: Color(0xff000000),
+  //                     ),
+  //                     decoration: InputDecoration(
+  //                       disabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       focusedBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       enabledBorder: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(4.0),
+  //                         borderSide: const BorderSide(
+  //                           color: Color(0xFF0051A3),
+  //                           width: 1,
+  //                         ), // Border color
+  //                       ),
+  //                       labelText: 'URL',
+  //                       labelStyle: const TextStyle(
+  //                         fontSize: 16,
+  //                         fontWeight: FontWeight.w400,
+  //                         fontStyle: FontStyle.normal,
+  //                         color: Color(0xff000000),
+  //                       ),
+  //                       filled: true,
+  //                       fillColor: const Color(0xFFFFFFFF),
+  //                       isDense: false,
+  //                       contentPadding: const EdgeInsets.symmetric(
+  //                         vertical: 8.0,
+  //                         horizontal: 12.0,
+  //                       ),
+  //                       icon: const Icon(Icons.link),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 9.0, width: 500.0),
+  //                 ],
+  //               ),
+  //             );
+  //           },
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Cancel'),
+  //             onPressed: () {
+  //               clearFields(); // Clear the text fields
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text('Add'),
+  //             onPressed: () async {
+  //               await savePassword(); // Save the password
+
+  //               clearFields();
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   Future<String?> addPasswordMenu(context) {
-    bool viewPassword = false;
-    return showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add Password'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    TextFormField(
-                      controller: widget.application,
-                      obscureText: false,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        color: Color(0xff000000),
+  bool viewPassword = false;
+  return showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text(
+          'Add Password',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildStyledField(
+                    icon: Icons.apps,
+                    label: 'Application',
+                    controller: widget.application,
+                  ),
+                  _buildStyledField(
+                    icon: Icons.person,
+                    label: 'Username',
+                    controller: widget.username,
+                  ),
+                  _buildStyledField(
+                    icon: Icons.lock,
+                    label: 'Password',
+                    controller: widget.password,
+                    obscure: !viewPassword,
+                    suffix: IconButton(
+                      icon: Icon(
+                        viewPassword ? Icons.visibility : Icons.visibility_off,
+                        color: viewPassword ? Colors.blue : Colors.grey,
                       ),
-                      decoration: InputDecoration(
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        labelText: 'Application',
-                        labelStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          color: Color(0xff000000),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFFFFFFF),
-                        isDense: false,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 12.0,
-                        ),
-                        icon: const Icon(Icons.apps_sharp),
-                      ),
+                      onPressed: () {
+                        setState(() {
+                          viewPassword = !viewPassword;
+                        });
+                      },
                     ),
-                    const SizedBox(height: 9.0, width: 500.0),
-
-                    TextFormField(
-                      controller: widget.username,
-                      obscureText: false,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        color: Color(0xff000000),
-                      ),
-                      decoration: InputDecoration(
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        labelText: 'Username',
-                        labelStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          color: Color(0xff000000),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFFFFFFF),
-                        isDense: false,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 12.0,
-                        ),
-                        icon: const Icon(Icons.person),
-                      ),
-                    ),
-                    const SizedBox(height: 9.0, width: 500.0),
-
-                    TextFormField(
-                      controller: widget.password,
-                      obscureText: !viewPassword,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        color: Color(0xff000000),
-                      ),
-                      decoration: InputDecoration(
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        labelText: 'Password',
-                        labelStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          color: Color(0xff000000),
-                        ),
-                        suffixIcon: IconButton(
-                          // icon: Icon(
-                          //   Icons.remove_red_eye,
-                          //   color: viewPassword ? Colors.blue : Colors.grey,
-                          // ),
-                          // onPressed: () {
-                          //   setState(() => viewPassword = !viewPassword);
-                          // },
-                          icon: Icon(
-                            viewPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: viewPassword ? Colors.blue : Colors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              viewPassword = !viewPassword;
-                            });
-                          },
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFFFFFFF),
-                        isDense: false,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 12.0,
-                        ),
-                        icon: const Icon(Icons.security),
-                      ),
-                    ),
-                    const SizedBox(height: 9.0, width: 500.0),
-
-                    TextFormField(
-                      controller: widget.url,
-                      obscureText: false,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.normal,
-                        color: Color(0xff000000),
-                      ),
-                      decoration: InputDecoration(
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0051A3),
-                            width: 1,
-                          ), // Border color
-                        ),
-                        labelText: 'URL',
-                        labelStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          fontStyle: FontStyle.normal,
-                          color: Color(0xff000000),
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFFFFFFF),
-                        isDense: false,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 12.0,
-                        ),
-                        icon: const Icon(Icons.link),
-                      ),
-                    ),
-                    const SizedBox(height: 9.0, width: 500.0),
-                  ],
-                ),
-              );
+                  ),
+                  _buildStyledField(
+                    icon: Icons.link,
+                    label: 'URL',
+                    controller: widget.url,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Cancel',
+              style: TextStyle(fontFamily: 'Roboto', fontWeight: FontWeight.w600),
+            ),
+            onPressed: () {
+              clearFields();
+              Navigator.of(context).pop();
             },
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                clearFields(); // Clear the text fields
-                Navigator.of(context).pop();
-              },
+          TextButton(
+            child: const Text(
+              'Add',
+              style: TextStyle(fontFamily: 'Roboto', fontWeight: FontWeight.w600),
             ),
-            TextButton(
-              child: const Text('Add'),
-              onPressed: () async {
-                await savePassword(); // Save the password
-
-                clearFields();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+            onPressed: () async {
+              await savePassword();
+              clearFields();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
   void clearFields() {
     widget.application.clear();
@@ -501,66 +623,127 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             onTap: () {
                               showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(password['application'] ?? ''),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.person, size: 20),
-                                          const SizedBox(width: 8),
-                                          Flexible(
-                                            child: Text(
-                                              'Username: ${password['username'] ?? ''}',
-                                              style: const TextStyle(fontSize: 16),
-                                            ),
-                                          ),
-                                        ],
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      password['application'] ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Roboto',
                                       ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.lock, size: 20),
-                                          const SizedBox(width: 8),
-                                          Flexible(
-                                            child: Text(
-                                              'Password: ${password['password'] ?? ''}',
-                                              style: const TextStyle(fontSize: 16),
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.person, size: 20, color: Colors.blueAccent),
+                                            const SizedBox(width: 8),
+                                            Flexible(
+                                              child: Text(
+                                                'Username: ',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: 'Roboto',
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.link, size: 20),
-                                          const SizedBox(width: 8),
-                                          Flexible(
-                                            child: Text(
-                                              'URL: ${password['url'] ?? ''}',
-                                              style: const TextStyle(fontSize: 16),
+                                            Flexible(
+                                              child: Text(
+                                                password['username'] ?? '',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'RobotoMono',
+                                                  color: Colors.black,
+                                                ),
+                                              ),
                                             ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.lock, size: 20, color: Colors.redAccent),
+                                            const SizedBox(width: 8),
+                                            Flexible(
+                                              child: Text(
+                                                'Password: ',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: 'Roboto',
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                password['password'] ?? '',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'RobotoMono',
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.link, size: 20, color: Colors.green),
+                                            const SizedBox(width: 8),
+                                            Flexible(
+                                              child: Text(
+                                                'URL: ',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: 'Roboto',
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                password['url'] ?? '',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontFamily: 'RobotoMono',
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text(
+                                          'OK',
+                                          style: TextStyle(
+                                            fontFamily: 'Roboto',
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                        ],
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
                                       ),
                                     ],
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
+                                  );
+                                },
+                              );
+                            },
                           ),
                         );
                       }

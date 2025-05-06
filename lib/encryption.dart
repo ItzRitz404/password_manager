@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:password_manager/key_derivation.dart';
 import 'package:ntcdcrypto/ntcdcrypto.dart';
 
 // generate key with pbkdf2
@@ -10,14 +7,6 @@ String generateKey() {
     final key = encrypt.Key.fromSecureRandom(32);  // 256-bit key for AES-256
     return base64.encode(key.bytes);
 }
-
-
-// String encryptData(String data, String encryptionKey) {
-//     final key = encrypt.Key.fromBase64(encryptionKey);
-//     final iv = encrypt.IV.fromSecureRandom(16);
-//     final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-//     return encrypter.encrypt(data, iv: iv).base64;
-// }
 
 String encryptData(String data, String encryptionKey) {
   final key = encrypt.Key.fromBase64(encryptionKey);  // Decode the encryption key
@@ -34,12 +23,6 @@ String encryptData(String data, String encryptionKey) {
   });
 }
 
-// String decryptData(String encryptedData, String encryptionKey) {
-//     final key = encrypt.Key.fromBase64(encryptionKey);
-//     final iv = encrypt.IV.fromSecureRandom(16);
-//     final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-//     return encrypter.decrypt(encrypt.Encrypted.fromBase64(encryptedData), iv: iv);
-// }
 Map<String, dynamic> decryptData(String encryptedJson, String encryptionKey) {
   final decoded = json.decode(encryptedJson); // Decode the JSON wrapper
   final iv = encrypt.IV.fromBase64(decoded['iv']);

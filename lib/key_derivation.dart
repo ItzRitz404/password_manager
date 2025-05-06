@@ -1,11 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:crypto/crypto.dart';
 import 'package:pointycastle/export.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:random_string/random_string.dart';
-import 'package:password_manager/main.dart';
 
 // create random salt value
 String generateRandomSalt([int len = 16]) {
