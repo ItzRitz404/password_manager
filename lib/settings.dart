@@ -127,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 await storage.write(key: 'gen_symbols', value: includeSymbols.toString());
                 await storage.write(key: 'gen_numbers', value: includeNumbers.toString());
                 await storage.write(key: 'gen_uppercase', value: includeUppercase.toString());
-                await storage.write(key: 'gen_length', value: passwordLength.round().toString()); // ← this
+                await storage.write(key: 'gen_length', value: passwordLength.round().toString()); 
                 Navigator.pop(context);
               },
               child: const Text('Save Generator Settings'),

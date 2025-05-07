@@ -322,9 +322,6 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: const Icon(Icons.close),
           tooltip: 'Close',
           onPressed: () {
-            // Add your close action here
-            // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-            // Close the app or navigate back
             SystemNavigator.pop(); // This will close the app
           },
         ),
