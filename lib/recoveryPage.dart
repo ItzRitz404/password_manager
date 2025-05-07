@@ -21,7 +21,7 @@ class _RecoveryPageState extends State<RecoveryPage> {
   String? error;
   String? newGeneratedRecovery;
 
-  Future<void> handleRecovery() async {
+  Future<void> recoveryProcess() async {
     final recoveryCodeInput = recoveryCodeController.text.trim();
     final newPassword = newPasswordController.text;
     final confirmPassword = confirmPasswordController.text;
@@ -114,7 +114,7 @@ class _RecoveryPageState extends State<RecoveryPage> {
             if (error != null)
               Text(error!, style: const TextStyle(color: Colors.red)),
             ElevatedButton(
-              onPressed: handleRecovery,
+              onPressed: recoveryProcess,
               child: const Text("Reset Master Password"),
             ),
             if (newGeneratedRecovery != null) ...[
