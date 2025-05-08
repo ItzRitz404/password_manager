@@ -134,23 +134,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // gen AES key
     final encryptionKey = generateKey();
-    final shares = splitKey(encryptionKey, 3, 5); // Split the key into 5 shares with a threshold of 3
+    print('Encryption Key: $encryptionKey');
+
+    // Split the key into 5 shares with a threshold of 3
+    final shares = splitKey(encryptionKey, 3, 5); 
+    print('Shares: $shares');
+
     final key = 'password_${DateTime.now().millisecondsSinceEpoch}';
 
     // store shares
     for (int i = 0; i < shares.length; i++) {
       await storage.write(key: '${key}_share_$i', value: shares[i]);
+
+      final stored = await storage.read(key: '${key}_share_$i');
+      print("  Successfully stored: ${stored == '${key}_share_$i' ? 'Yes' : 'No'}");
     }
 
     final encryptedData = encryptData(
       json.encode(newPassword),
       encryptionKey,
     );
+    print('Encrypted Data: $encryptedData');
+ 
+    // Store the encrypted password
+    await storage.write(key: key, value: encryptedData); 
 
-    await storage.write(key: key, value: encryptedData); // Store the encrypted password
-
-    passwords.insert(0, key); // Store the encryption key
-    await loadKeys(); // Reload the keys to update the UI
+    // Store the encryption key
+    passwords.insert(0, key); 
+    
+    // Reload the keys to update the UI
+    await loadKeys(); 
   }
 
 
@@ -171,6 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final recontructedKey = reconstructKey(shares);
+    print('Reconstructed Key: $recontructedKey');
 
     final Map<String, dynamic> decrypted = decryptData(encryptedData, recontructedKey);
     return decrypted;
