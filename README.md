@@ -52,19 +52,16 @@ Install dependencies
 From the project root:
 ```
 ```bash
-Copy code
 flutter pub get
 Run the app
 ```
 ```bash
-Copy code
 flutter run
 ```
 Run on a specific platform
 Examples:
 
 ```bash
-Copy code
 flutter run -d chrome
 flutter run -d windows
 flutter run -d android
@@ -72,29 +69,24 @@ flutter run -d android
 🏗️ Build
 Android (APK)
 ```bash
-Copy code
 flutter build apk
 ```
 iOS
 ```bash
-Copy code
 flutter build ios
 ```
 Web
 ```bash
-Copy code
 flutter build web
 ```
 Windows / macOS / Linux
 ```bash
-Copy code
 flutter build windows
 flutter build macos
 flutter build linux
 ```
 🗂️ Project Structure (typical Flutter)
 ```bash
-Copy code
 lib/        # App source code (UI + logic)
 test/       # Tests
 android/    # Android native project
@@ -119,6 +111,5 @@ Consider device backups/cloud sync implications
 
 🧪 Testing
 ```bash
-Copy code
 flutter test
 ```
