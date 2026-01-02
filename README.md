@@ -1,16 +1,124 @@
-# password_manager
+# Password Manager (Flutter)
 
-A new Flutter project.
+A cross-platform **Password Manager** app built with **Flutter**.  
+This repository contains the Flutter app plus platform targets (Android, iOS, Web, Windows, macOS, Linux).
 
-## Getting Started
+> ⚠️ **Disclaimer:** This project is for learning/personal use. Review the code and security model carefully before storing real secrets.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Goals
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Store credentials in a simple, searchable vault
+- Keep data **local-first**
+- Protect the vault with a **master password** (and optionally biometrics)
+- Provide a secure **password generator**
+- Support multiple platforms via Flutter
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## ✅ Features (current / planned)
+
+This project may still be evolving—treat the list below as a roadmap-style checklist.
+
+- [ ] Master password / lock screen
+- [ ] Add / edit / delete vault items (site, username, password, notes)
+- [ ] Search + filter
+- [ ] Password generator (length, symbols, numbers, etc.)
+- [ ] Copy-to-clipboard with auto-clear timer
+- [ ] Encrypted local storage (vault)
+- [ ] Optional biometric unlock
+- [ ] Import / export (CSV/JSON) *(optional)*
+
+---
+
+## 🧰 Tech Stack
+
+- **Flutter** / **Dart**
+- Platform targets: Android, iOS, Web, Windows, macOS, Linux
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK installed
+- A configured device/emulator (Android Studio / Xcode) **or** a desktop/web target enabled
+
+Verify Flutter setup:
+```bash
+flutter doctor
+Install dependencies
+From the project root:
+```
+```bash
+Copy code
+flutter pub get
+Run the app
+```
+```bash
+Copy code
+flutter run
+```
+Run on a specific platform
+Examples:
+
+```bash
+Copy code
+flutter run -d chrome
+flutter run -d windows
+flutter run -d android
+```
+🏗️ Build
+Android (APK)
+```bash
+Copy code
+flutter build apk
+```
+iOS
+```bash
+Copy code
+flutter build ios
+```
+Web
+```bash
+Copy code
+flutter build web
+```
+Windows / macOS / Linux
+```bash
+Copy code
+flutter build windows
+flutter build macos
+flutter build linux
+```
+🗂️ Project Structure (typical Flutter)
+```bash
+Copy code
+lib/        # App source code (UI + logic)
+test/       # Tests
+android/    # Android native project
+ios/        # iOS native project
+web/        # Web target
+windows/    # Windows target
+macos/      # macOS target
+linux/      # Linux target
+```
+🔐 Security Notes
+If you plan to store real passwords:
+
+Ensure the vault is encrypted at rest
+
+Avoid logging sensitive values (passwords, keys, tokens)
+
+Prefer well-reviewed crypto/storage packages
+
+Implement auto-lock and clipboard timeout behavior
+
+Consider device backups/cloud sync implications
+
+🧪 Testing
+```bash
+Copy code
+flutter test
+```
